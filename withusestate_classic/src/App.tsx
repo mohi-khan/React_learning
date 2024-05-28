@@ -7,21 +7,20 @@ interface TodoItem {
   completed: boolean;
 }
 const initialItems: TodoItem[] = [];
-
-export default function App() {
+export default function Layout() {
+  return (
+    <div className="App">
+      <Header />
+      <App />
+    </div>
+  );
+}
+export  function App() {
   const [items, setItems] = useState(initialItems);
-  const [inputTitle, setInputTitle] = useState("");
   const [editId, setEditId] = useState<number|null>(null); //for storing Edit It
   const [editedTitle, setEditedTitle] = useState(""); // For storing Edited Title
   const [filterStatus, setFilterStatus] = useState("all");
-  function changeTextarea(e:React.ChangeEvent<HTMLInputElement>) {
-    setInputTitle(e.target.value);
-  }
-  function addItem() {
-    // To Add a new Item on list
-    setItems([...items, { id: nextId++, title: inputTitle, completed: false }]);
-    setInputTitle("");
-  }
+ 
   function statusChange(id: number) {
     //To changed the packed item of the list i.e completed called from click on checkbox
     const updatedItems = items.map((item) =>
@@ -37,6 +36,10 @@ export default function App() {
     }));
 
     setItems(updatedItems);
+  }
+  function addItem(inputTitle:string) {
+    // To Add a new Item on list
+    setItems([...items, { id: nextId++, title: inputTitle, completed: false }]);
   }
   function enableEditing(id: number) {
     //change the editing id from null
@@ -64,49 +67,140 @@ export default function App() {
   function onChangeItemTitle(e:React.ChangeEvent<HTMLInputElement>) {
     setEditedTitle(e.target.value);
   }
-  function countPendingTasks() {
-    //To check Number of task yet to completed
-    return items.filter((item) => !item.completed).length;
-  }
+ 
   function deleteItems(id: number) {
     //to delete a specific item from list
     const updateItems = items.filter((item) => item.id !== id);
     setItems(updateItems);
   }
+  return (
+    <div className="App">
+     
+      <div className="mydiv">
+      <TodoForm addItem={addItem} statusChangeAll={statusChangeAll} />
+      </div>
+      <TodoList
+          items={items}
+          filterStatus={filterStatus}
+          editId={editId}
+          statusChange={statusChange}
+          editedTitle={editedTitle}
+          onChangeItemTitle={onChangeItemTitle}
+          saveEditingTitle={saveEditingTitle}
+          enableEditing={enableEditing}
+          deleteItems={deleteItems}
+        />
+      <button className="opaque-button" onClick={() => setFilterStatus("all")}>
+        {" "}
+        All{" "}
+      </button>
+      <button
+        className="opaque-button"
+        onClick={() => setFilterStatus("active")}
+      >
+        {" "}
+        Active{" "}
+      </button>
+      <button
+        className="opaque-button"
+        onClick={() => setFilterStatus("completed")}
+      >
+        {" "}
+        Completed{" "}
+      </button>
+    </div>
+  );
+}
+
+function Header(){
+ return <>
+    <h1>Hello Program</h1>
+      <h2>TO DO List</h2>
+ </>
+}
+function TodoForm({addItem,statusChangeAll}:any){
+  const [inputTitle, setInputTitle] = useState("");
+  function changeTextarea(e:React.ChangeEvent<HTMLInputElement>) {
+    setInputTitle(e.target.value);
+  }
+ 
+  return <form onSubmit={(e) => {
+    e.preventDefault();
+    addItem(inputTitle);
+    setInputTitle("");
+  }}
+>
+    <input type={"checkbox"} onClick={() => statusChangeAll()} />
+        <input
+          value={inputTitle}
+          placeholder="Add Item"
+          required
+          onChange={changeTextarea}
+          
+        />
+
+        <button >Add</button>
+  </form>
+}
+function TodoList({
+  editId,
+  statusChange,
+  editedTitle,
+  onChangeItemTitle,
+  saveEditingTitle,
+  enableEditing,
+  deleteItems,
+  filterStatus,
+  items,
+}: any)
+{
   function getFilterList() {
     //Change the list according to filter
     if (filterStatus === "all") return items;
     else if (filterStatus === "completed")
-      return items.filter((item) => item.completed);
+      return items.filter((item:TodoItem) => item.completed);
     else if (filterStatus === "active")
-      return items.filter((item) => !item.completed);
+      return items.filter((item:TodoItem) => !item.completed);
     else return items;
   }
-
+  const pendingTasks = items.filter((item:TodoItem) => !item.completed).length;
   return (
-    <div className="App">
-      <h1>Hello CodeSandbox</h1>
-      <h2>TO DO List</h2>
-      <div className="mydiv">
-        <input type={"checkbox"} onClick={() => statusChangeAll()} />
-        <input
-          type='text'
-          value={inputTitle}
-          placeholder="Add Item"
-          onChange={changeTextarea}
-          onKeyPress={(e) => {
-            if (e.key === "Enter") {
-              addItem();
-            }
-          }}
-        />
-
-        <button onClick={() => addItem()}>Add</button>
-      </div>
-      <div className="mydiv">
+  <>
+    <div className="mydiv">
         <ul className="no-list-style">
-          {getFilterList().map((item, index) => (
-            <li key={item.id}>
+          {getFilterList().map((item:TodoItem, index:number) => (
+            <ListItem  key={item.id}
+            item={item}
+            index={index}
+            editId={editId}
+            statusChange={statusChange}
+            editedTitle={editedTitle}
+            onChangeItemTitle={onChangeItemTitle}
+            saveEditingTitle={saveEditingTitle}
+            enableEditing={enableEditing}
+            deleteItems={deleteItems}
+          />
+          ))}
+        </ul>
+      </div>
+      <p>
+        <b>{pendingTasks}</b> tasks pending
+      </p>
+  </>)
+  
+}
+function ListItem({item,
+  index,
+  editId,
+  statusChange,
+  editedTitle,
+  onChangeItemTitle,
+  saveEditingTitle,
+  enableEditing,
+  deleteItems,
+}: any){
+  return(
+    <li key={item.id}>
               <input
                 type="checkbox"
                 checked={item.completed}
@@ -142,30 +236,5 @@ export default function App() {
                 &times;
               </button>
             </li>
-          ))}
-        </ul>
-      </div>
-      <p>
-        <b>{countPendingTasks()}</b> tasks pending
-      </p>
-      <button className="opaque-button" onClick={() => setFilterStatus("all")}>
-        {" "}
-        All{" "}
-      </button>
-      <button
-        className="opaque-button"
-        onClick={() => setFilterStatus("active")}
-      >
-        {" "}
-        Active{" "}
-      </button>
-      <button
-        className="opaque-button"
-        onClick={() => setFilterStatus("completed")}
-      >
-        {" "}
-        Completed{" "}
-      </button>
-    </div>
-  );
+  )
 }
