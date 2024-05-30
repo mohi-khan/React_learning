@@ -1,0 +1,39 @@
+.mydiv {
+    font-family: sans-serif;
+    text-align: left;
+    display: flex;
+    padding: 10px;
+  }
+  .App textarea {
+    flex: 1; /* Maintain equal width */
+    padding: 10px; /* Adjust padding if needed */
+    margin: 0px; /* Adjust margin if needed */
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    height: 20px; /* Maintain height for alignment */
+    line-height: 1.5; /* Adjust line height for textarea */
+  }
+  
+  .App button {
+    flex:1;
+    padding: 0px 20px; /* Increase horizontal padding for more space */
+    height: 30px; /* Maintain button height */
+    margin-left: 10px; /* Add margin-left for space between elements */
+  }
+  .strikethrough {
+    text-decoration: line-through;
+  }
+  .no-list-style {
+    list-style-type: none;
+  }
+  .delete-button {
+    background: none;
+    border: none;
+    color: black;
+    cursor: pointer;
+    font-size: 1.5rem;
+    margin-left: 10px;
+  }
+  .opaque-button:hover {
+    background-color: rgb(245, 241, 241); /* Fully opaque on hover */
+  }
