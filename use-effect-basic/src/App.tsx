@@ -1,49 +1,32 @@
-import {useState,useEffect} from 'react';
+import { UserList } from './components/UserList'
+import reactLogo from './assets/react.svg'
+import viteLogo from '/vite.svg'
+import './App.css'
 
-function UserList(){
-  const [users,setUsers]=useState([]);
-  const [loading,setLoading] = useState(true);
-  const [error,setError] = useState(null);
-
-  useEffect(()=>{
-    const controller=new AbortController();
-    const signal=controller.signal;
-    const fetchUsers=async()=>{
-      try{
-        const response=await fetch('https://jsonplaceholder.typicode.com/users', { signal });
-        if (!response.ok)
-          {
-            throw new Error('Network Exception');
-          }
-        const data = await response.json();
-        setUsers(data);
-      }
-      catch(err){
-        if (err.name !== 'AbortError')
-          setError(err.name)
-      }
-      finally{
-          setLoading(false);
-      }
-    }
-    fetchUsers();
-    return () => {
-      controller.abort();
-    }
-  },[])
-
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error}</p>;
-
+function App() {
+  
   return (
-    <div>
-      <h1>User List</h1>
-      <ul>
-        {users.map(user => (
-          <li key={user.id}>{user.name}</li>
-        ))}
-      </ul>
-    </div>
-  );
+    <>
+      <div>
+        <a href="https://vitejs.dev" target="_blank">
+          <img src={viteLogo} className="logo" alt="Vite logo" />
+        </a>
+        <a href="https://react.dev" target="_blank">
+          <img src={reactLogo} className="logo react" alt="React logo" />
+        </a>
+      </div>
+      <h1>Vite + React</h1>
+      <div className="card">
+          <UserList/>
+        <p>
+          Edit <code>src/App.tsx</code> and save to test HMR
+        </p>
+      </div>
+      <p className="read-the-docs">
+        Click on the Vite and React logos to learn more
+      </p>
+    </>
+  )
 }
-export default UserList;
+
+export default App
